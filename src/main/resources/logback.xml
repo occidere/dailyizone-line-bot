@@ -11,7 +11,7 @@
 	<!-- 일별 파일로 저장 -->
 	<appender name="errorFileLogger" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<!-- 현재 날짜의 파일은 아래 경로에 invalid.log로 저장 -->
-		<file>/Users/occidere/logs/daily_izone_line_bot_error.log</file>
+		<file>${log.base.dir:${user.home}/logs}/daily_izone_line_bot_error.log</file>
 		<encoder>
 			<pattern>[%d{yyyy-MM-dd HH:mm:ss}][%thread{0}][%class{0}:%line][%-5level] %msg%n</pattern>
 		</encoder>

@@ -7,10 +7,10 @@ import com.linecorp.bot.model.message.ImageMessage;
 import com.linecorp.bot.model.message.Message;
 import com.linecorp.bot.model.message.TextMessage;
 import com.linecorp.bot.model.response.BotApiResponse;
-import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.occidere.dailyizonelinebot.dto.InstagramPhoto;
-import org.occidere.dailyizonelinebot.service.InstagramService;
+import org.occidere.dailyizonelinebot.repository.instagram.InstagramRepository;
+import org.occidere.dailyizonelinebot.repository.linebotinfo.LineBotInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
@@ -31,7 +31,6 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@LineMessageHandler
 public class DailyIzoneController {
 	@Autowired
 	private LineMessagingClient lineMessagingClient;
@@ -40,13 +39,15 @@ public class DailyIzoneController {
 	private String dailyIzoneId;
 
 	@Autowired
-	private InstagramService instagramService;
+	private InstagramRepository instagramRepository;
+
+	@Autowired
+	private LineBotInfoRepository lineBotInfoRepository;
 
 	@GetMapping(value = "/health")
 	public String healtCheck() {
 		return LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
 	}
-
 
 	@RequestMapping(value = "/notify/line/izone/image", method = RequestMethod.GET)
 	public String pushImageEvent(@RequestParam(value = "range", defaultValue = "1") int range,
@@ -64,7 +65,7 @@ public class DailyIzoneController {
 		response.put("to", to);
 		log.info("Range: {} ~ {}", from, to);
 
-		List<InstagramPhoto> photos = instagramService.findImageByAuthorAndDateRange(author, from, to);
+		List<InstagramPhoto> photos = instagramRepository.findImageByAuthorAndDateRange(author, from, to);
 		log.info("photos: {}", photos);
 
 		if (CollectionUtils.isEmpty(photos)) {
